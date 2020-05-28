@@ -7,13 +7,15 @@ import random
 
 
 class TheGame:
+
     def __init__(self):
+        self.player = ['A', 'B', 'C', 'D', 'E']
         self.set_cards()
+        self.set_players()
         self.handout()
         self.set_table()
-        self.drawed = 0
-        self.turn_over = False
-        self.turn_do()
+        self.cards_used = 0
+        self.play()
 
     def set_cards(self):
         self.cards = []
@@ -21,19 +23,33 @@ class TheGame:
             self.cards.append(i)
         random.shuffle(self.cards)
 
+    def set_players(self):
+        self.holds = 0
+        while not self.holds:
+            self.players_count = int(input('How many players? (max 5)'))
+            if self.players_count == 1:
+                self.holds = 8
+            elif self.players_count == 2:
+                self.holds = 7
+            elif self.players_count > 2 and self.players_count <= 5:
+                self.holds = 6
+            else:
+                print('**Check Players (max 5)**')
+                self.holds = 0
+        self.players = []
+        for i in range(self.players_count):
+            self.players.append(self.player.pop(0))
+
     def handout(self):
         # Cards distribution
-        self.playerA = []
-        self.playerB = []
-        self.holds = 7
-
-        for i in range(self.holds):
-            self.playerA.append(self.cards.pop())
-            self.playerB.append(self.cards.pop())
-        self.playerA.sort()
-        self.playerB.sort()
-        print(self.playerA)
-        print(self.playerB)
+        self.cards_onHands = []
+        for x in range(self.players_count):
+            temp = []
+            for i in range(self.holds):
+                temp.append(self.cards.pop())
+            temp.sort()
+            self.cards_onHands.insert(x, temp)
+        print(self.cards_onHands)
 
     def set_table(self):
         # Table setting
@@ -43,37 +59,43 @@ class TheGame:
         self.desc2 = 99
         self.status_message()
 
-    def turn_do(self):
-        self.turn_message()
+    def play(self):
+        for id in range(len(self.players)):
+            self.turn_do(id)
 
-        while not self.turn_over:
-            if self.drawed < 2:
+    def turn_do(self, id):
+        self.turn_message(id)
+        while True:
+            print(self.cards_onHands[id])
+            if self.cards_used < 2:
                 self.selected = int(
                     input('Select a card(put the card number): '))
             else:
-                self.selected = int(
-                    input("Select a card(put the card number) or end turn with '0': "))
+                msg = "Select a card(put the card number) or End turn with '0': "
+                self.selected = int(input(msg))
             print('*'*50)
-            if self.selected in self.playerA:
-                self.card_index = self.playerA.index(self.selected)
-                self.now_card = self.playerA.pop(self.card_index)
-                self.card_at = self.card_dest()
-                self.put_card_on(self.card_at)
+            if self.selected in self.cards_onHands[id]:
+                self.card_index = self.cards_onHands[id].index(self.selected)
+                self.now_card = self.cards_onHands[id].pop(self.card_index)
+                while True:
+                    self.card_at = self.card_dest()
+                    if self.put_card_on(self.card_at):
+                        break
 
             # End turn phase
-            elif self.selected == 0 and self.drawed >= 2:
+            elif self.selected == 0 and self.cards_used >= 2:
                 print('Turn finished')
-                self.drawed = 0
-                self.turn_over = True
+                self.cards_used = 0
+                self.draw_cards(id)
                 break
             else:
                 print('**Put the number correctly**')
 
-    def turn_message(self):
+    def turn_message(self, id):
         print('*'*50)
-        print('Turn of Player A')
+        print(f'Turn of Player {self.players[id]}')
         print('*'*50)
-        print(self.playerA)
+        print(self.cards_onHands[id])
         print()
         self.status_message()
 
@@ -97,17 +119,38 @@ class TheGame:
 
     def put_card_on(self, dest):
         if dest == 1:
-            self.asc1 = self.now_card
+            if self.asc1 < self.now_card or self.asc1 - 10 == self.now_card:
+                self.asc1 = self.now_card
+            else:
+                print('***Wrong way.. think again***')
+                return False
         elif dest == 2:
-            self.asc2 = self.now_card
+            if self.asc2 < self.now_card or self.asc2 - 10 == self.now_card:
+                self.asc2 = self.now_card
+            else:
+                print('Wrong way.. think again')
+                return False
         elif dest == 3:
             self.desc1 = self.now_card
         elif dest == 4:
             self.desc2 = self.now_card
 
         self.now_card = 0
-        self.drawed += 1
+        self.cards_used += 1
         self.status_message()
+        return True
+
+    def draw_cards(self, id):
+        while len(self.cards_onHands[id]) < 7:
+            self.cards_onHands[id].append(self.cards.pop())
+
+
+class Player:
+    def __init__(self):
+        self.hands = []
+
+    def draw(self, id):
+        pass
 
 
 TheGame()
