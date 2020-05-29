@@ -60,8 +60,22 @@ class TheGame:
         self.status_message()
 
     def play(self):
-        for id in range(len(self.players)):
-            self.turn_do(id)
+        # End condition
+        while not self.is_end():
+            for id in range(len(self.players)):
+                self.turn_do(id)
+
+    def is_end(self):
+        if self.cards or self.cards_onHands:
+            for onHand in self.cards_onHands:
+                try:
+                    for card in onHand:
+                        if card < self.desc1 or card < self.desc2 or card > self.asc1 or card > self.asc2:
+                            return False
+                except:
+                    continue
+
+        return True
 
     def turn_do(self, id):
         self.turn_message(id)
@@ -131,9 +145,17 @@ class TheGame:
                 print('Wrong way.. think again')
                 return False
         elif dest == 3:
-            self.desc1 = self.now_card
+            if self.desc1 > self.now_card or self.desc1 + 10 == self.now_card:
+                self.desc1 = self.now_card
+            else:
+                print('Wrong way.. think again')
+                return False
         elif dest == 4:
-            self.desc2 = self.now_card
+            if self.desc2 > self.now_card or self.desc2 + 10 == self.now_card:
+                self.desc2 = self.now_card
+            else:
+                print('Wrong way.. think again')
+                return False
 
         self.now_card = 0
         self.cards_used += 1
@@ -141,8 +163,9 @@ class TheGame:
         return True
 
     def draw_cards(self, id):
-        while len(self.cards_onHands[id]) < 7:
+        while len(self.cards_onHands[id]) < self.holds:
             self.cards_onHands[id].append(self.cards.pop())
+        self.cards_onHands[id].sort()
 
 
 class Player:
