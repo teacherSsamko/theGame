@@ -64,6 +64,8 @@ class TheGame:
         while not self.is_end():
             for id in range(len(self.players)):
                 self.turn_do(id)
+        print('Game Finished')
+        print(self.cards_onHands)
 
     def is_end(self):
         if self.cards or self.cards_onHands:
@@ -79,7 +81,7 @@ class TheGame:
 
     def turn_do(self, id):
         self.turn_message(id)
-        while True:
+        while not self.end_player(id):
             print(self.cards_onHands[id])
             if self.cards_used < 2:
                 self.selected = int(
@@ -104,6 +106,14 @@ class TheGame:
                 break
             else:
                 print('**Put the number correctly**')
+
+    def end_player(self, id):
+        if len(self.cards_onHands[id]) > self.holds - 2:
+            for card in self.cards_onHands[id]:
+                if card > self.desc1 or card > self.desc2 or card < self.asc1 or card < self.asc2:
+                    print(f'Player {self.players[id]} out')
+                    return True
+        return False
 
     def turn_message(self, id):
         print('*'*50)
