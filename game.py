@@ -1,39 +1,31 @@
 import random
+from player import Player
 
 
 class Game:
 
     def __init__(self):
-        self.player = ['A', 'B', 'C', 'D', 'E']
-        self.set_cards()
-        self.set_players()
-        self.handout()
-        self.set_table()
-        self.cards_used = 0
-        self.play()
+        self.player_names = ['A','B','C','D','E']
+
+        
 
     def set_cards(self):
-        self.cards = []
-        for i in range(2, 99):
-            self.cards.append(i)
+        self.cards = [x for x in range(2,99)]
         random.shuffle(self.cards)
 
-    def set_players(self):
-        self.holds = 0
-        while not self.holds:
-            self.players_count = int(input('How many players? (max 5)'))
-            if self.players_count == 1:
-                self.holds = 8
-            elif self.players_count == 2:
-                self.holds = 7
-            elif self.players_count > 2 and self.players_count <= 5:
-                self.holds = 6
-            else:
-                print('**Check Players (max 5)**')
-                self.holds = 0
+    def set_players(self, players_count=2):
+        if players_count == 1:
+            holds = 8
+        elif players_count == 2:
+            holds = 7
+        elif players_count > 2 and players_count <= 5:
+            holds = 6
+        else:
+            print('**Check Players (max 5)**')
+            holds = 0
         self.players = []
-        for i in range(self.players_count):
-            self.players.append(self.player.pop(0))
+        for i in range(players_count):
+            self.players.append(self.player_names.pop(0))
 
     def handout(self):
         # Cards distribution
