@@ -1,4 +1,6 @@
 import random
+import os
+
 from player import Player
 from lines import AscLine, DescLine
 
@@ -58,10 +60,10 @@ class Game:
         self.lines = [self.asc1, self.asc2, self.desc1, self.desc2]
 
     def show_lines_top(self):
-        print(f'asc1 >> {self.asc1.top}')
-        print(f'asc2 >> {self.asc2.top}')
-        print(f'desc1 >> {self.desc1.top}')
-        print(f'desc2 >> {self.desc2.top}')
+        print(f'1) asc1 >> {self.asc1.top}')
+        print(f'2) asc2 >> {self.asc2.top}')
+        print(f'3) desc1 >> {self.desc1.top}')
+        print(f'4) desc2 >> {self.desc2.top}')
 
     def next_turn(self):
         self.turn += 1
@@ -84,21 +86,35 @@ class Game:
         player = self.players[player_index]
         cards_used = 0
         while self.playing:
+            os.system('clear')
             if not self.check_end(player_index):
-                print('playing')
+                print(f'{player.name}\'s turn:')
+                input('Enter to start your turn')
                 self.show_lines_top()
                 player.show_hands()
-                n = int(input('which card do you want to put on?'))
-                line_index = int(input('which line do you want to put on?'))
-                line = self.lines[line_index]
-                player.put_card(line, n)
+                # n = int(input(f'\rwhich card do you want to put on?'))
+                n = int(
+                    input(f'which card do you want to put on? (1 ~ {len(player.hands)})'))
+                line_index = int(
+                    input('which line do you want to put on? (1 ~ 4)'))
+                line = self.lines[line_index - 1]
+                player.put_card(line, n - 1)
                 cards_used += 1
                 # when cards_used > min_cards and player want to stop
-                break
+                if cards_used >= self.min_cards:
+                    want_stop = input(
+                        'Do you want to finish your turn? (1:YES, 2:NO)')
+                    if want_stop == '1':
+                        break
+
             else:
                 print('finish')
                 self.playing = False
         player.draw(game, cards_used)
+        os.system('clear')
+        self.show_lines_top()
+        player.show_hands()
+        input('Enter to finish your turn')
 
     def check_end(self, player_index):
         for card in self.players[player_index].hands:
