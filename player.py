@@ -11,7 +11,8 @@ class Player:
         @param n: the number of cards to draw
         @param game: Game instance now playing
         """
-        self.hands.append(game.cards.pop())
+        for _ in range(n):
+            self.hands.append(game.cards.pop())
         game.shuffle_cards()
 
     def set_name(self, name):
@@ -21,7 +22,8 @@ class Player:
         line.stack_on(self.hands.pop(cards_index))
 
     def show_hands(self):
-        print(self.hands)
+        # print(f'\r{self.hands}', end='')
+        print(f'{self.hands}')
 
     def __str__(self):
         return self.name
