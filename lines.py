@@ -9,11 +9,15 @@ class Line:
         self.stack = []
 
     def stack_on(self, n):
-        self.stack.append(n)
-        self.top = n
+        if self.valid_stack(n):
+            self.stack.append(n)
+            self.top = n
+        else:
+            # Raise an wrong Error
+            pass
 
     def valid_stack(self, n):
-        pass
+        return True
 
 
 class AscLine(Line):
