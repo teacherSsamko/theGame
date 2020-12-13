@@ -32,8 +32,8 @@ class AscLine(Line):
 
 class DescLine(Line):
     def __init__(self):
-        self.stack = [99]
-        self.top = 99
+        self.stack = [100]
+        self.top = 100
 
     def valid_stack(self, n):
         if n < self.top:
