@@ -8,10 +8,14 @@ class Game:
     def __init__(self, player_n=2):
         self.player_names = ['A', 'B', 'C', 'D', 'E']
         self.cards_used = 0
-        self.cards = [x for x in range(2, 99)] * 2
+        self.cards = [x for x in range(2, 100)] * 2
         self.players_count = player_n
         self.set_holds()
         self.set_lines()
+        self.turn = 0
+        self.player_index = 0
+        self.playing = False
+        self.min_cards = 2
 
     def shuffle_cards(self):
         random.shuffle(self.cards)
@@ -33,6 +37,7 @@ class Game:
         self.players = []
         for _ in range(self.players_count):
             self.players.append(Player(self.player_names.pop(0)))
+        self.now_player = self.players[0]
 
     def handout(self):
         # Cards distribution
@@ -42,7 +47,7 @@ class Game:
 
     def show_players_hands(self):
         for player in self.players:
-            print(player.hands)
+            print(f'{player.name} - {player.hands}')
 
     def set_lines(self):
         # Table setting
@@ -50,12 +55,61 @@ class Game:
         self.asc2 = AscLine()
         self.desc1 = DescLine()
         self.desc2 = DescLine()
+        self.lines = [self.asc1, self.asc2, self.desc1, self.desc2]
 
     def show_lines_top(self):
         print(f'asc1 >> {self.asc1.top}')
         print(f'asc2 >> {self.asc2.top}')
         print(f'desc1 >> {self.desc1.top}')
         print(f'desc2 >> {self.desc2.top}')
+
+    def next_turn(self):
+        self.turn += 1
+        self.player_index = self.turn % self.players_count
+        print(f'next turn >> {self.players[self.player_index]}')
+
+    def game_start(self):
+        self.playing = True
+
+    def game_end(self):
+        self.playing = False
+
+    def check_deck_empty(self):
+        if not self.cards:
+            self.min_cards = 1
+            return True
+        return False
+
+    def player_do(self, game, player_index):
+        player = self.players[player_index]
+        cards_used = 0
+        while self.playing:
+            if not self.check_end(player_index):
+                print('playing')
+                self.show_lines_top()
+                player.show_hands()
+                n = int(input('which card do you want to put on?'))
+                line_index = int(input('which line do you want to put on?'))
+                line = self.lines[line_index]
+                player.put_card(line, n)
+                cards_used += 1
+                # when cards_used > min_cards and player want to stop
+                break
+            else:
+                print('finish')
+                self.playing = False
+        player.draw(game, cards_used)
+
+    def check_end(self, player_index):
+        for card in self.players[player_index].hands:
+            if (
+                self.asc1.top < card or
+                self.asc2.top < card or
+                self.desc1.top > card or
+                self.desc2. top > card
+            ):
+                return False
+        return True
 
     # def play(self):
     #     # End condition
@@ -120,11 +174,11 @@ class Game:
     #     print()
     #     self.status_message()
 
-    def status_message(self):
-        self.cards_left = len(self.cards)
-        print(f'{self.cards_left} cards left ')
-        self.table_status = f'(1)asc1:  {self.asc1:2} (2)asc2:  {self.asc2:2} \n(3)desc1: {self.desc1:2} (4)desc2: {self.desc2:2}'
-        print(self.table_status)
+    # def status_message(self):
+    #     self.cards_left = len(self.cards)
+    #     print(f'{self.cards_left} cards left ')
+    #     self.table_status = f'(1)asc1:  {self.asc1:2} (2)asc2:  {self.asc2:2} \n(3)desc1: {self.desc1:2} (4)desc2: {self.desc2:2}'
+    #     print(self.table_status)
 
     # def card_dest(self):
     #     while True:
