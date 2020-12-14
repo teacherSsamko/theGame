@@ -85,20 +85,33 @@ class Game:
     def player_do(self, game, player_index):
         player = self.players[player_index]
         cards_used = 0
+        os.system('clear')
         while self.playing:
-            os.system('clear')
             if not self.check_end(player_index):
                 print(f'{player.name}\'s turn:')
                 input('Enter to start your turn')
                 self.show_lines_top()
                 player.show_hands()
                 # n = int(input(f'\rwhich card do you want to put on?'))
-                n = int(
-                    input(f'which card do you want to put on? (1 ~ {len(player.hands)})'))
-                line_index = int(
-                    input('which line do you want to put on? (1 ~ 4)'))
+                n, line_index = (None, None)
+                while not Game.get_card_index(n, len(player.hands)):
+                    try:
+                        n = int(
+                            input(f"which 'card' do you want to put on? (1 ~ {len(player.hands)})"))
+                    except:
+                        print('Only Number available')
+                while not Game.get_line_index(line_index):
+                    try:
+                        line_index = int(
+                            input("which 'line' do you want to put on? (1 ~ 4)"))
+                    except:
+                        print('Only Number available')
                 line = self.lines[line_index - 1]
-                player.put_card(line, n - 1)
+                try:
+                    player.put_card(line, n - 1)
+                except:
+                    print('You did wrong way')
+                    continue
                 cards_used += 1
                 # when cards_used > min_cards and player want to stop
                 if cards_used >= self.min_cards:
@@ -125,6 +138,24 @@ class Game:
                 self.desc2. top > card
             ):
                 return False
+        return True
+
+    @staticmethod
+    def get_card_index(i, limit):
+        if not i:
+            return False
+        elif i < 0 or i > limit:
+            print('You took wrong number')
+            return False
+        return True
+
+    @staticmethod
+    def get_line_index(i):
+        if not i:
+            return False
+        elif i < 0 or i > 4:
+            print('You took wrong number')
+            return False
         return True
 
     # def play(self):
