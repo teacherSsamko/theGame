@@ -19,7 +19,12 @@ class Player:
         self.name = name
 
     def put_card(self, line, cards_index):
-        line.stack_on(self.hands.pop(cards_index))
+        card = self.hands.pop(cards_index)
+        if line.valid_stack(card):
+            line.stack_on(card)
+        else:
+            self.hands.append(card)
+            raise Exception
 
     def show_hands(self):
         # print(f'\r{self.hands}', end='')

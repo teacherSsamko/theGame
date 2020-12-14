@@ -9,12 +9,8 @@ class Line:
         self.stack = []
 
     def stack_on(self, n):
-        if self.valid_stack(n):
-            self.stack.append(n)
-            self.top = n
-        else:
-            # Raise an wrong Error
-            pass
+        self.stack.append(n)
+        self.top = n
 
     def valid_stack(self, n):
         return True
