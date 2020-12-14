@@ -8,7 +8,8 @@ from game import Game
 from player import Player
 
 if __name__ == "__main__":
-    game = Game()
+    people = int(input('How many people do you play in? (1~5)'))
+    game = Game(people)
     game.shuffle_cards()
     game.set_players()
     game.handout()
